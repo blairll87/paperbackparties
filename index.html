@@ -3,8 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Paperback Parties</title>
-<meta name="description" content="Paperback Parties: storybook parties made simple. Free party guides and a 2-minute party planner.">
+<title>Paperback Parties · Storybook Parties Made Simple</title>
+<meta name="description" content="Free storybook party guides and a 2-minute party planner. Alice in Wonderland, Candy Factory, Goldilocks, Treasure Island, and Sherlock Holmes parties for every age.">
+<link rel="canonical" href="https://www.paperbackparties.com/">
+<meta property="og:site_name" content="Paperback Parties">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Paperback Parties">
+<meta property="og:description" content="Free storybook party guides and a 2-minute party planner. Alice in Wonderland, Candy Factory, Goldilocks, Treasure Island, and Sherlock Holmes parties for every age.">
+<meta property="og:url" content="https://www.paperbackparties.com/">
+<meta property="og:image" content="https://www.paperbackparties.com/images/home.png">
+<meta property="og:image:width" content="1000">
+<meta property="og:image:height" content="1500">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect x=%276%27 y=%274%27 width=%278%27 height=%2724%27 rx=%271%27 fill=%27%232c7a7e%27/%3E%3Crect x=%2716%27 y=%277%27 width=%276%27 height=%2721%27 rx=%271%27 fill=%27%23a57813%27/%3E%3Crect x=%2723%27 y=%275%27 width=%275%27 height=%2723%27 rx=%271%27 fill=%27%237c2a36%27/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Karla:wght@400;600;700&display=swap">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Karla:wght@400;600;700&display=swap">
@@ -194,9 +209,9 @@ footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--rule);font-fa
 <body>
 <div class="wrap" id="app" data-story="">
   <header class="mast">
-    <a class="brand" href="#home"><b>Paperback Parties</b><span>Storybook parties made simple</span></a>
+    <a class="brand" href="./"><b>Paperback Parties</b><span>Storybook parties made simple</span></a>
     <nav aria-label="Party guides">
-      <a href="#alice">Alice</a><a href="#candy">Candy Factory</a><a href="#goldilocks">Goldilocks</a><a href="#treasure">Treasure Island</a><a href="#sherlock">Sherlock</a><a href="#planner">Plan a party</a>
+      <a href="alice/">Alice</a><a href="candy/">Candy Factory</a><a href="goldilocks/">Goldilocks</a><a href="treasure/">Treasure Island</a><a href="sherlock/">Sherlock</a><a href="#planner">Plan a party</a>
     </nav>
   </header>
 
@@ -304,6 +319,11 @@ footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--rule);font-fa
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyCvWx6SuJd0EndLhRRfKHKHpnjczgjAypjJggX94bba_CKp7LPOht18q7WHGr-bBZD/exec";   // e.g. "https://script.google.com/macros/s/XXXX/exec"
 const SITE_URL   = "https://www.paperbackparties.com/";   // e.g. "https://yourname.github.io/paperback-parties/"
 /* ================================================================================== */
+const PAGE = "", BASE = "", MODE = "path";
+const guideHref = k => MODE==="path" ? BASE+k+"/" : "#"+k;
+const goGuide = k => { if(MODE==="path") location.href=guideHref(k); else location.hash=k; };
+const track = (name,params) => { try{ if(window.gtag) gtag("event",name,params||{}); }catch(e){} };
+const pageId = () => location.pathname+location.hash;
 
 const GUIDES = JSON.parse(document.getElementById('guides-data').textContent);
 const AGES = {L:"Little ones (1–4)",K:"Kids (5–9)",T:"Tweens & teens (10–17)",A:"Adults (18+)"};
@@ -406,12 +426,12 @@ function renderPlan(o){
       <section><h3>Countdown</h3><ol class="count">${P.steps.map(x=>`<li class="${x.late?"late":""}"><div class="when">${x.late?"Catch up":esc(fmtDay(x.date))}<small>${x.days===1?"day before":x.days+" days out"}</small></div><div><b>${esc(x.title)}</b><ul>${x.items.map(i=>`<li>${esc(i)}</li>`).join("")}</ul></div></li>`).join("")}</ol></section>
       <section><h3>Party day</h3><table class="tl"><tbody>${P.tl.map(r=>`<tr><td>${esc(r.t)}</td><td>${esc(r.txt)}</td></tr>`).join("")}</tbody></table>
         <h3 style="margin-top:26px">Games for your crowd</h3><ul class="chips">${P.games.map(g=>`<li class="${g.vs?"vs":""}">${esc(g.name)}</li>`).join("")||"<li>Pick a different story for this age</li>"}</ul>
-        <p class="fine">Filled chips are team showdowns. Full rules are in the <a href="#${o.story}">${esc(s.short)} guide</a>.</p></section>
+        <p class="fine">Filled chips are team showdowns. Full rules are in the <a href="${guideHref(o.story)}">${esc(s.short)} guide</a>.</p></section>
       <section><h3>Menu</h3><ul class="plain">${menu.map(m=>`<li>${esc(m)}</li>`).join("")}</ul>${s.note?`<p class="fine">${esc(s.note)}</p>`:""}</section>
       <section><h3>Things to gather</h3><ul class="plain">${s.gather.map(m=>`<li>${esc(m)}</li>`).join("")}</ul></section>
     </div>
     <div class="plan-foot no-print">${inFrame?"":`<button class="btn" type="button" id="print-btn">Print or save as PDF</button>`}
-      <a class="btn ghost" href="#${o.story}">Read the full guide</a>
+      <a class="btn ghost" href="${guideHref(o.story)}">Read the full guide</a>
       <span id="send-status"></span><span class="ever">&hellip;and they all partied happily ever after.</span></div>
   </div>`;
   const pb=$("#print-btn"); if(pb) pb.onclick=()=>window.print();
@@ -445,7 +465,8 @@ function mountPlanner(){
     if(pbtn.disabled) return;
     renderPlan(o);
     busy(pbtn,true,"Sending your copy…");
-    const ok=await send(Object.assign({type:"plan",page:location.hash||"#home",link:planLink(o)},o));
+    const ok=await send(Object.assign({type:"plan",page:pageId(),link:planLink(o)},o));
+    track("plan_created",{story:o.story,age_group:o.age,party_length:o.len});
     busy(pbtn,false);
     $("#send-status").textContent=ok?"A copy is on its way to your inbox.":(SCRIPT_URL?"We couldn't send the email copy, but your plan is right here.":"Preview mode: emailing turns on once the Google Sheet is connected.");
   });
@@ -453,7 +474,7 @@ function mountPlanner(){
 
 function mountShelf(){
   const shelf=$("#shelf"), cap=$("#shelf-caption"), def=cap.innerHTML;
-  shelf.innerHTML=Object.entries(STORIES).map(([k,v])=>`<a class="spine" href="#${k}" data-story="${k}" aria-label="${esc(v.name)} party guide"><div class="bands"></div><h3>${esc(v.name.replace(" and the Three Bears",""))}</h3><span class="kind">${esc(v.kind)}</span></a>`).join("")+'<div class="leaner" aria-hidden="true"></div>';
+  shelf.innerHTML=Object.entries(STORIES).map(([k,v])=>`<a class="spine" href="${guideHref(k)}" data-story="${k}" aria-label="${esc(v.name)} party guide"><div class="bands"></div><h3>${esc(v.name.replace(" and the Three Bears",""))}</h3><span class="kind">${esc(v.kind)}</span></a>`).join("")+'<div class="leaner" aria-hidden="true"></div>';
   shelf.querySelectorAll(".spine").forEach(a=>{const v=STORIES[a.dataset.story];
     const show=()=>cap.innerHTML=`<b>${esc(v.name)}</b> &middot; ${esc(v.hook)}`;
     a.addEventListener("mouseenter",show);a.addEventListener("focus",show);
@@ -463,9 +484,10 @@ function mountShelf(){
 function surprise(){
   const books=[...document.querySelectorAll(".shelf .spine")];
   const pick=books[Math.floor(Math.random()*books.length)];
-  if(matchMedia("(prefers-reduced-motion: reduce)").matches){location.hash=pick.dataset.story;return}
+  track("surprise_me",{story:pick.dataset.story});
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches){goGuide(pick.dataset.story);return}
   pick.classList.add("pulled");
-  setTimeout(()=>{pick.classList.remove("pulled");location.hash=pick.dataset.story},650);
+  setTimeout(()=>{pick.classList.remove("pulled");goGuide(pick.dataset.story)},650);
 }
 function placePlanner(where){
   const form=$("#planner"), out=$("#view-plan");
@@ -474,10 +496,12 @@ function placePlanner(where){
 }
 
 function route(){
-  const key=(location.hash||"#home").slice(1);
+  const hashKey=(location.hash||"#home").slice(1);
+  if(MODE==="path" && !PAGE && STORIES[hashKey]){ location.replace(guideHref(hashKey)); return; }
+  const key=PAGE||hashKey;
   const app=$("#app");
   $("#view-plan").hidden=true;
-  document.querySelectorAll(".mast nav a").forEach(a=>a.toggleAttribute("aria-current",a.getAttribute("href")==="#"+key));
+  document.querySelectorAll(".mast nav a").forEach(a=>{const h=a.getAttribute("href");a.toggleAttribute("aria-current",STORIES[key]?h===guideHref(key):h==="#"+key)});
   if(STORIES[key]){
     const v=STORIES[key];
     app.dataset.story=key;
@@ -489,13 +513,12 @@ function route(){
     placePlanner("guide");
     $("#p-story").value=key; $("#p-story").dispatchEvent(new Event("change"));
     $("#wait-form").dataset.story=key; $("#wait-msg").textContent="We'll only email you about the kit.";
-    document.title=v.name+" Party Guide · Paperback Parties";
-    window.scrollTo(0,0);
+    if(MODE!=="path"){document.title=v.name+" Party Guide · Paperback Parties";window.scrollTo(0,0);}
   } else {
     app.dataset.story="";
     $("#view-guide").hidden=true; $("#view-home").hidden=false;
     placePlanner("home");
-    document.title="Paperback Parties";
+    if(MODE!=="path") document.title="Paperback Parties";
     if(key==="planner"){$("#planner-slot").scrollIntoView({block:"start"})}
     else if(key==="shelf"){$(".shelf-head").scrollIntoView({block:"start"})}
     else if(key==="contact"){$("#contact").scrollIntoView({block:"start"})}
@@ -518,7 +541,8 @@ $("#wait-form").addEventListener("submit",async e=>{
   const email=$("#wait-email").value.trim(), msg=$("#wait-msg");
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){msg.textContent="Enter a valid email address.";return}
   busy(btn,true,"Saving…"); msg.textContent="Saving your spot…";
-  const ok=await send({type:"waitlist",email,story:e.target.dataset.story,page:location.hash});
+  const ok=await send({type:"waitlist",email,story:e.target.dataset.story,page:pageId()});
+  if(ok) track("waitlist_join",{story:e.target.dataset.story});
   busy(btn,false);
   msg.textContent=ok?"You're on the list!":(SCRIPT_URL?"Something went wrong. Try again in a moment.":"Preview mode: sign-ups save once the Google Sheet is connected.");
   if(ok) $("#wait-email").value="";
@@ -533,7 +557,8 @@ $("#contact-form").addEventListener("submit",async e=>{
   if(!message){st.textContent="Write a message before sending.";$("#c-msg").focus();return}
   if($("#c-website").value){st.textContent="Thanks! Your message is on its way.";return}
   busy(btn,true,"Sending…"); st.textContent="";
-  const ok=await send({type:"message",name,email,message,page:location.hash});
+  const ok=await send({type:"message",name,email,message,page:pageId()});
+  if(ok) track("contact_message");
   busy(btn,false);
   if(ok){st.textContent="Thanks! Your message is on its way, and we'll write back soon.";$("#c-msg").value=""}
   else st.textContent=SCRIPT_URL?"Something went wrong. Try again in a moment.":"Preview mode: messages send once the Google Sheet is connected.";
@@ -541,6 +566,7 @@ $("#contact-form").addEventListener("submit",async e=>{
 
 mountShelf(); mountPlanner(); route();
 window.addEventListener("hashchange",route);
+document.querySelectorAll('a[href^="http"]').forEach(a=>a.addEventListener("click",()=>track("outbound_click",{url:a.href})));
 
 /* A plan link from the email (?plan=...) opens that plan directly */
 (()=>{const q=new URLSearchParams(location.search);const k=q.get("plan");
