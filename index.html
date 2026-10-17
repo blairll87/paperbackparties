@@ -117,6 +117,16 @@ label.f{display:flex;flex-direction:column;gap:4px;font-weight:600;font-size:13p
 }
 
 .about{margin-top:44px;max-width:36em}
+.contact{margin-top:44px;max-width:640px;background:var(--sheet);border:1px solid var(--rule);border-radius:6px;padding:22px;font-family:var(--ui);font-size:15px}
+.contact h2{font-size:28px;margin-bottom:6px}
+.contact-lede{font-family:var(--body);font-size:18px;color:var(--muted);margin:0 0 14px}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px}
+.contact-grid .full{grid-column:1/-1}
+@media (max-width:520px){.contact-grid{grid-template-columns:1fr}}
+.contact input,.contact textarea{width:100%;padding:9px 10px;border:1px solid var(--rule);border-radius:4px;background:var(--paper);color:var(--ink);font:inherit;font-size:16px}
+.contact textarea{resize:vertical;font-family:var(--body);font-size:17px}
+.hp{position:absolute!important;left:-9999px;width:1px;height:1px;overflow:hidden}
+.btn[disabled]{opacity:.6;cursor:wait}
 .about h2{font-size:28px;margin-bottom:8px}
 .about p{margin:0;font-size:19px;color:var(--muted)}
 .how{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;margin-top:40px}
@@ -215,6 +225,20 @@ footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--rule);font-fa
           <h2 id="about-h">Who's behind the books</h2>
           <p id="about-text">Paperback Parties is what happens when two book-loving sisters can't stop throwing parties. From a Wonderland tea party to a candy-factory book club, we love dreaming up clever ways to bring the people we love together inside a story.</p>
         </section>
+        <section class="contact" id="contact" aria-labelledby="contact-h">
+          <h2 id="contact-h">Say hello</h2>
+          <p class="contact-lede">Questions, a story you'd love to see, or photos from your own party? We read every note.</p>
+          <form id="contact-form" novalidate>
+            <div class="contact-grid">
+              <label class="f" for="c-name">Your name<input id="c-name" type="text" autocomplete="name" maxlength="80"></label>
+              <label class="f" for="c-email">Your email<input id="c-email" type="email" autocomplete="email" placeholder="you@example.com" required></label>
+              <label class="f full" for="c-msg">Message<textarea id="c-msg" rows="5" maxlength="2000" required></textarea></label>
+              <label class="hp" for="c-website" aria-hidden="true">Leave this empty<input id="c-website" type="text" tabindex="-1" autocomplete="off"></label>
+            </div>
+            <p style="margin:14px 0 0"><button class="btn" type="submit" id="c-btn">Send message</button></p>
+            <p class="fine" id="c-status" aria-live="polite"></p>
+          </form>
+        </section>
       </div>
     </section>
 
@@ -249,7 +273,7 @@ footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--rule);font-fa
 
   </main>
 
-  <footer><span>Paperback Parties &middot; Storybook parties made simple</span><span>Stories retold from the public-domain classics.</span></footer>
+  <footer><span>Paperback Parties &middot; Storybook parties made simple &middot; <a href="#contact">Say hello</a></span><span>Stories retold from the public-domain classics.</span></footer>
 </div>
 
 <template id="planner-tpl">
@@ -417,8 +441,12 @@ function mountPlanner(){
     if(!parseDate(o.date)){err.textContent="Pick your party date.";return}
     if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(o.email)){err.textContent="Enter your email so we can send your plan.";$("#p-email").focus();return}
     err.textContent="";
+    const pbtn=e.target.querySelector('button[type="submit"]');
+    if(pbtn.disabled) return;
     renderPlan(o);
+    busy(pbtn,true,"Sending your copy…");
     const ok=await send(Object.assign({type:"plan",page:location.hash||"#home",link:planLink(o)},o));
+    busy(pbtn,false);
     $("#send-status").textContent=ok?"A copy is on its way to your inbox.":(SCRIPT_URL?"We couldn't send the email copy, but your plan is right here.":"Preview mode: emailing turns on once the Google Sheet is connected.");
   });
 }
@@ -470,6 +498,7 @@ function route(){
     document.title="Paperback Parties";
     if(key==="planner"){$("#planner-slot").scrollIntoView({block:"start"})}
     else if(key==="shelf"){$(".shelf-head").scrollIntoView({block:"start"})}
+    else if(key==="contact"){$("#contact").scrollIntoView({block:"start"})}
     else{window.scrollTo(0,0)}
   }
 }
@@ -477,13 +506,37 @@ function route(){
 $("#surprise").addEventListener("click",surprise);
 $("#side-plan-btn").addEventListener("click",()=>$("#guide-plan").scrollIntoView({behavior:"smooth",block:"start"}));
 
+function busy(btn,on,label){
+  if(on){btn.dataset.label=btn.textContent;btn.textContent=label;btn.disabled=true}
+  else{btn.textContent=btn.dataset.label||btn.textContent;btn.disabled=false}
+}
+
 $("#wait-form").addEventListener("submit",async e=>{
   e.preventDefault();
+  const btn=e.target.querySelector("button");
+  if(btn.disabled) return;
   const email=$("#wait-email").value.trim(), msg=$("#wait-msg");
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){msg.textContent="Enter a valid email address.";return}
+  busy(btn,true,"Saving…"); msg.textContent="Saving your spot…";
   const ok=await send({type:"waitlist",email,story:e.target.dataset.story,page:location.hash});
+  busy(btn,false);
   msg.textContent=ok?"You're on the list!":(SCRIPT_URL?"Something went wrong. Try again in a moment.":"Preview mode: sign-ups save once the Google Sheet is connected.");
   if(ok) $("#wait-email").value="";
+});
+
+$("#contact-form").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const btn=$("#c-btn"), st=$("#c-status");
+  if(btn.disabled) return;
+  const name=$("#c-name").value.trim(), email=$("#c-email").value.trim(), message=$("#c-msg").value.trim();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){st.textContent="Enter your email so we can write back.";$("#c-email").focus();return}
+  if(!message){st.textContent="Write a message before sending.";$("#c-msg").focus();return}
+  if($("#c-website").value){st.textContent="Thanks! Your message is on its way.";return}
+  busy(btn,true,"Sending…"); st.textContent="";
+  const ok=await send({type:"message",name,email,message,page:location.hash});
+  busy(btn,false);
+  if(ok){st.textContent="Thanks! Your message is on its way, and we'll write back soon.";$("#c-msg").value=""}
+  else st.textContent=SCRIPT_URL?"Something went wrong. Try again in a moment.":"Preview mode: messages send once the Google Sheet is connected.";
 });
 
 mountShelf(); mountPlanner(); route();
